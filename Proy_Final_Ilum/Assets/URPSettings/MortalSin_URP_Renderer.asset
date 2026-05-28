@@ -10,13 +10,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b00045f12942b46c698459096c89274e, type: 3}
-  m_Name: FullScreenPassRendererFeature
+  m_Name: Outlines
   m_EditorClassIdentifier: 
   m_Active: 1
   injectionPoint: 550
   fetchColorBuffer: 1
   requirements: 5
   passMaterial: {fileID: 2100000, guid: bc8eb541db5b20348beaf8cc5bfe33ff, type: 2}
+  passIndex: 0
+  bindDepthStencilAttachment: 0
+  m_Version: 1
+--- !u!114 &-7766167794476094903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b00045f12942b46c698459096c89274e, type: 3}
+  m_Name: BlurBlend
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  injectionPoint: 550
+  fetchColorBuffer: 1
+  requirements: 4
+  passMaterial: {fileID: 2100000, guid: 75a99d0bbc471ef42bc677bb7afec265, type: 2}
   passIndex: 0
   bindDepthStencilAttachment: 0
   m_Version: 1
@@ -30,7 +50,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b00045f12942b46c698459096c89274e, type: 3}
-  m_Name: FullScreenPassRendererFeature
+  m_Name: MortalSinFiltert
   m_EditorClassIdentifier: 
   m_Active: 1
   injectionPoint: 600
@@ -67,7 +87,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -4472482073473661873}
   - {fileID: -8761303483381540374}
-  m_RendererFeatureMap: 4fc44c1a408deec1ea99a6b7e6986986
+  - {fileID: -7766167794476094903}
+  m_RendererFeatureMap: 4fc44c1a408deec1ea99a6b7e6986986496a2cb089073994
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}

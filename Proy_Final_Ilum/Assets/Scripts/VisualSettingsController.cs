@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,25 @@ public class VisualSettingsController : MonoBehaviour
 
     [Header("Gradients")]
     public Toggle gradientsToggle;
+    public Slider pixelSizeSlider;
+    public GameObject pixelSizeContainer;
+
+    [Header("Blur/Blend")]
+    public Material blurBlendMaterial;
+    public Slider blurSlider;
+    public Slider blendSlider;
+
+    [Header("Grain")]
+    public Slider grainSlider;
+
+    [Header("Contrast")]
+    public Slider contrastSlider;
+
+    [Header("Brightness")]
+    public Slider brightnessSlider;
+
+    [Header("Saturation")]
+    public Slider saturationSlider;
 
     void Start()
     {
@@ -45,8 +65,45 @@ public class VisualSettingsController : MonoBehaviour
         //gradients
         if (mortalSinMaterial != null && gradientsToggle != null)
         {
-            gradientsToggle.isOn = mortalSinMaterial.GetFloat("_GradientsEnabled") > 0.5f;
+            bool isGradientsOn = mortalSinMaterial.GetFloat("_GradientsEnabled") > 0.5f;
+            gradientsToggle.isOn = isGradientsOn;
             gradientsToggle.onValueChanged.AddListener(SetGradients);
+
+            if (pixelSizeContainer != null)
+            {
+                pixelSizeContainer.SetActive(isGradientsOn);
+            }
+        }
+
+        if (pixelSizeSlider != null)
+        {
+            pixelSizeSlider.value = mortalSinMaterial.GetFloat("_PixelSize");
+            pixelSizeSlider.onValueChanged.AddListener(SetPixelSize);
+        }
+
+        //blur y blend
+        if (blurBlendMaterial != null && blurSlider != null && blendSlider != null)
+        {
+            blurSlider.value = blurBlendMaterial.GetFloat("_BlurSize");
+            blendSlider.value = blurBlendMaterial.GetFloat("_Blend");
+
+            // Escuchamos los cambios
+            blurSlider.onValueChanged.AddListener(SetBlur);
+            blendSlider.onValueChanged.AddListener(SetBlend);
+        }
+
+        //grain
+        if (mortalSinMaterial != null && gradientsToggle != null)
+        {
+            grainSlider.value = mortalSinMaterial.GetFloat("_GrainIntensity");
+            grainSlider.onValueChanged.AddListener(SetGrain);
+        }
+
+        if (mortalSinMaterial != null)
+        {
+            if (contrastSlider != null) { contrastSlider.value = mortalSinMaterial.GetFloat("_Contrast"); contrastSlider.onValueChanged.AddListener(SetContrast); }
+            if (brightnessSlider != null) { brightnessSlider.value = mortalSinMaterial.GetFloat("_Brightness"); brightnessSlider.onValueChanged.AddListener(SetBrightness); }
+            if (saturationSlider != null) { saturationSlider.value = mortalSinMaterial.GetFloat("_Saturation"); saturationSlider.onValueChanged.AddListener(SetSaturation); }
         }
     }
 
@@ -76,14 +133,87 @@ public class VisualSettingsController : MonoBehaviour
     private void SetGradients(bool isEnabled)
     {
         if (mortalSinMaterial != null)
+        {
             mortalSinMaterial.SetFloat("_GradientsEnabled", isEnabled ? 1.0f : 0.0f);
+            mortalSinMaterial.SetFloat("_DitherEnabled", isEnabled ? 1.0f : 0.0f);
+        }
+
+        if (pixelSizeContainer != null)
+        {
+            pixelSizeContainer.SetActive(isEnabled);
+        }
     }
 
+    private void SetPixelSize(float value)
+    {
+        if (mortalSinMaterial != null)
+        {
+            mortalSinMaterial.SetFloat("_PixelSize", value);
+        }
+    }
+
+    private void SetBlur(float value)
+    {
+        if (blurBlendMaterial != null)
+        {
+            blurBlendMaterial.SetFloat("_BlurSize", value);
+        }
+    }
+
+    private void SetBlend(float value)
+    {
+        if (blurBlendMaterial != null)
+        {
+            blurBlendMaterial.SetFloat("_Blend", value);
+        }
+    }
+
+    private void SetGrain(float value)
+    {
+        if (mortalSinMaterial != null)
+        {
+            mortalSinMaterial.SetFloat("_GrainIntensity", value);
+        }
+    }
+
+    private void SetContrast(float value)
+    {
+        if (mortalSinMaterial != null)
+        {
+            mortalSinMaterial.SetFloat("_Contrast", value);
+        }
+    }
+
+    private void SetBrightness(float value)
+    {
+        if (mortalSinMaterial != null)
+        {
+            mortalSinMaterial.SetFloat("_Brightness", value);
+        }
+    }
+
+    private void SetSaturation(float value)
+    {
+        if (mortalSinMaterial != null)
+        {
+            mortalSinMaterial.SetFloat("_Saturation", value);
+        }
+    }
+
+
+
+    //limpiamos listeners
     void OnDestroy()
     {
         if (shadowsToggle != null) shadowsToggle.onValueChanged.RemoveListener(SetShadows);
         if (scanlinesToggle != null) scanlinesToggle.onValueChanged.RemoveListener(SetScanlines);
         if (outlinesToggle != null) outlinesToggle.onValueChanged.RemoveListener(SetOutlines);
         if (gradientsToggle != null) gradientsToggle.onValueChanged.RemoveListener(SetGradients);
+        if (blurSlider != null) blurSlider.onValueChanged.RemoveListener(SetBlur);
+        if (blendSlider != null) blendSlider.onValueChanged.RemoveListener(SetBlend);
+        if (grainSlider != null) grainSlider.onValueChanged.RemoveListener(SetGrain);
+        if (contrastSlider != null) contrastSlider.onValueChanged.RemoveListener(SetContrast);
+        if (brightnessSlider != null) brightnessSlider.onValueChanged.RemoveListener(SetBrightness);
+        if (saturationSlider != null) saturationSlider.onValueChanged.RemoveListener(SetSaturation);
     }
 }

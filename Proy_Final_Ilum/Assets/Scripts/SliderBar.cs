@@ -17,6 +17,13 @@ public class SliderBar : MonoBehaviour
 
     public void UpdateText(float value)
     {
-        myValueText.text = value.ToString("F1", CultureInfo.InvariantCulture);
+        if (mySlider.wholeNumbers)
+        {
+            myValueText.text = value.ToString("F0", CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            myValueText.text = value.ToString("F1", CultureInfo.InvariantCulture);
+        }
     }
 }
