@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class FirstPersonLook : MonoBehaviour
 {
@@ -10,6 +12,9 @@ public class FirstPersonLook : MonoBehaviour
     Vector2 velocity;
     Vector2 frameVelocity;
 
+    public Animator animator;
+    public float delay = 0.5f;
+    private bool attackBlocked;
 
     void Reset()
     {
@@ -35,5 +40,23 @@ public class FirstPersonLook : MonoBehaviour
         // Rotate camera up-down and controller left-right from velocity.
         transform.localRotation = Quaternion.AngleAxis(-velocity.y, Vector3.right);
         character.localRotation = Quaternion.AngleAxis(velocity.x, Vector3.up);
+
+        if(Input.GetMouseButtonDown(0)){
+            Attack();
+        }
+    }
+
+    public void Attack(){
+        if(attackBlocked){
+            return;
+        }
+        animator.SetTrigger("Attack");
+        attackBlocked = true;
+        StartCoroutine(DelayAttack());
+    }
+
+    private IEnumerator DelayAttack(){
+        yield return new WaitForSeconds(delay);
+        attackBlocked = false;
     }
 }
