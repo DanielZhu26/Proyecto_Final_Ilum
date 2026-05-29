@@ -20,6 +20,18 @@ Shader "Hidden/MortalSinFilter"
        _Contrast ("Contrast", Range(0, 1)) = 0.5
        _Brightness ("Brightness", Range(0, 1)) = 0.5
        _Saturation ("Saturation", Range(0, 1)) = 0.5
+
+       //paleta de colores
+       _PaletteEnabled ("Palette Enabled", Range(0, 1)) = 0.0
+       _Color0 ("Darkest Color", Color) = (0, 0, 0, 1)
+       _Color1 ("Dark Color", Color) = (0.3, 0.1, 0.1, 1)
+       _Color2 ("Light Color", Color) = (0.8, 0.2, 0.2, 1)
+       _Color3 ("Lightest Color", Color) = (1, 1, 1, 1)
+
+       //luz
+       _LumaThreshold1 ("Shadow Cutoff", Range(0.0, 1.0)) = 0.25
+       _LumaThreshold2 ("Midtone Cutoff", Range(0.0, 1.0)) = 0.50
+       _LumaThreshold3 ("Highlight Cutoff", Range(0.0, 1.0)) = 0.75
     }
     SubShader
     {
@@ -50,6 +62,16 @@ Shader "Hidden/MortalSinFilter"
             float _Contrast;
             float _Brightness;
             float _Saturation;
+
+            float _PaletteEnabled;
+            half4 _Color0;
+            half4 _Color1;
+            half4 _Color2;
+            half4 _Color3;
+
+            float _LumaThreshold1;
+            float _LumaThreshold2;
+            float _LumaThreshold3;
 
             //ruido aleatorio
             float rand(float2 uv)
@@ -84,13 +106,24 @@ Shader "Hidden/MortalSinFilter"
                 half4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, pixelatedUV);
 
                 //dithering
-               float ditherPattern = Bayer2x2(virtualPixelPos) * _DitherSpread;
+                float ditherPattern = Bayer2x2(virtualPixelPos) * _DitherSpread;
                 float3 ditheredColor = color.rgb + (ditherPattern * _DitherEnabled);
                 color.rgb = lerp(color.rgb, ditheredColor, _DitherEnabled);
 
                 //gradient posterizacion
-               float3 posterizedColor = floor(color.rgb * _GradientSteps) / _GradientSteps;
+                float3 posterizedColor = floor(color.rgb * _GradientSteps) / _GradientSteps;
                 color.rgb = lerp(color.rgb, posterizedColor, _GradientsEnabled);
+
+                //calculamos la luminosidad final despues del Dither y Gradients
+                float finalLum = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
+                
+                //asignamos el color dependiendo de en que escalon caiga la luz 
+                float3 palettedColor = _Color0.rgb;
+                palettedColor = lerp(palettedColor, _Color1.rgb, step(_LumaThreshold1, finalLum));
+                palettedColor = lerp(palettedColor, _Color2.rgb, step(_LumaThreshold2, finalLum));
+                palettedColor = lerp(palettedColor, _Color3.rgb, step(_LumaThreshold3, finalLum));
+                
+                color.rgb = lerp(color.rgb, palettedColor, _PaletteEnabled); 
 
                 //convertimos el 0.5 del slider en el 1.0 real para q se vea bien en el slider
                 float actualBrightness = _Brightness * 2.0;
@@ -107,7 +140,9 @@ Shader "Hidden/MortalSinFilter"
                 //todos los colores con la misma intensidad
                 float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
                 color.rgb = lerp(half3(luminance, luminance, luminance), color.rgb, actualSaturation);
-                
+
+                color.rgb = saturate(color.rgb);
+
                 //scanlines: usamos _ScreenParams.y para que las lineas sean del tamaño de 1 pixel
                 //multiplicamos usamos el seno para crear un patron de ondas horizontales
                 float wave = sin(uv.y * _ScreenParams.y * 2.5);
