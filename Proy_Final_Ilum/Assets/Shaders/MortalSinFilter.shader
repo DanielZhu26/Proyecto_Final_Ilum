@@ -96,10 +96,10 @@ Shader "Hidden/MortalSinFilter"
                 
                 float pSize = max(1.0, floor(_PixelSize));
                 float2 virtualResolution = _ScreenParams.xy / pSize;
-                // Redondeamos las coordenadas UV para forzar la lectura en bloques cuadrados
+                //redondeamos las coordenadas UV para forzar la lectura en bloques cuadrados
                 float2 pixelatedUV = floor(uv * virtualResolution) / virtualResolution;
                 
-                // Calculamos el índice exacto (X, Y) del "píxel gordo" para los demás efectos
+                //calculamos el indice exacto (X, Y) del "pixel gordo" para los demas efectos
                 int2 virtualPixelPos = int2(pixelatedUV.x * virtualResolution.x, pixelatedUV.y * virtualResolution.y);
 
                 //obtenemos el color original del juego
