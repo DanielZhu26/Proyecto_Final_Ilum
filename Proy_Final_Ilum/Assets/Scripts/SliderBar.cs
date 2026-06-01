@@ -23,7 +23,14 @@ public class SliderBar : MonoBehaviour
         }
         else
         {
-            myValueText.text = value.ToString("F1", CultureInfo.InvariantCulture);
+            float snappedValue = Mathf.Round(value * 10f) / 10f;
+
+            if (Mathf.Abs(mySlider.value - snappedValue) > 0.001f)
+            {
+                mySlider.value = snappedValue;
+            }
+
+            myValueText.text = snappedValue.ToString("F1", CultureInfo.InvariantCulture);
         }
     }
 }
